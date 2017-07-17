@@ -4,5 +4,5 @@ version = "0.1.0"
 authors = ["quininer kel <quininer@live.com>"]
 
 [dependencies]
-tiny-keccak = { path = "/home/quininer/workspace/sec/fork/tiny-keccak" }
+tiny-keccak = { git = "https://github.com/quininer/tiny-keccak" }
 byteorder = "*"
