@@ -43,8 +43,15 @@ impl CShake {
     }
 
     #[inline]
-    pub fn finalize(self, buf: &mut [u8]) {
-        self.0.finalize(buf)
+    pub fn finalize(&mut self, buf: &mut [u8]) {
+        self.0.pad();
+        self.0.keccakf();
+        self.0.squeeze(buf);
+    }
+
+    #[inline]
+    pub fn squeeze(&mut self, buf: &mut [u8]) {
+        self.0.squeeze(buf)
     }
 }
 
