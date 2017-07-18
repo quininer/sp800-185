@@ -2,16 +2,19 @@ use tiny_keccak::Keccak;
 use ::utils::left_encode;
 
 
+#[derive(Clone)]
 pub struct CShake(pub Keccak);
 
 impl CShake {
-    pub fn cshake128(name: &[u8], custom: &[u8]) -> Self {
+    #[inline]
+    pub fn new_cshake128(name: &[u8], custom: &[u8]) -> Self {
         let mut cshake = CShake(Keccak::new(168, 0x04));
         cshake.init(name, custom, 168);
         cshake
     }
 
-    pub fn cshake256(name: &[u8], custom: &[u8]) -> Self {
+    #[inline]
+    pub fn new_cshake256(name: &[u8], custom: &[u8]) -> Self {
         let mut cshake = CShake(Keccak::new(136, 0x04));
         cshake.init(name, custom, 136);
         cshake
@@ -54,7 +57,7 @@ fn test_cshake128() {
     let output = b"\xC1\xC3\x69\x25\xB6\x40\x9A\x04\xF1\xB5\x04\xFC\xBC\xA9\xD8\x2B\x40\x17\x27\x7C\xB5\xED\x2B\x20\x65\xFC\x1D\x38\x14\xD5\xAA\xF5";
 
     let mut buf = vec![0; output.len()];
-    let mut cshake = CShake::cshake128(name, custom);
+    let mut cshake = CShake::new_cshake128(name, custom);
     cshake.update(input);
     cshake.finalize(&mut buf);
     assert_eq!(buf, output);
@@ -72,7 +75,7 @@ fn test_cshake128() {
     let output = b"\xC5\x22\x1D\x50\xE4\xF8\x22\xD9\x6A\x2E\x88\x81\xA9\x61\x42\x0F\x29\x4B\x7B\x24\xFE\x3D\x20\x94\xBA\xED\x2C\x65\x24\xCC\x16\x6B";
 
     let mut buf = vec![0; output.len()];
-    let mut cshake = CShake::cshake128(name, custom);
+    let mut cshake = CShake::new_cshake128(name, custom);
     cshake.update(input);
     cshake.finalize(&mut buf);
     assert_eq!(buf, output);
@@ -87,7 +90,7 @@ fn test_cshake256() {
                         \x64\x02\x0E\x2B\xE0\x56\x08\x58\xD9\xC0\x0C\x03\x7E\x34\xA9\x69\x37\xC5\x61\xA7\x4C\x41\x2B\xB4\xC7\x46\x46\x95\x27\x28\x1C\x8C";
 
     let mut buf = vec![0; output.len()];
-    let mut cshake = CShake::cshake256(name, custom);
+    let mut cshake = CShake::new_cshake256(name, custom);
     cshake.update(input);
     cshake.finalize(&mut buf);
     assert_eq!(buf, &output[..]);
@@ -106,7 +109,7 @@ fn test_cshake256() {
                         \x27\xF4\x2B\x17\xED\x1D\xF6\x3E\x8E\xC1\x18\xF0\x4B\x23\x63\x3C\x1D\xFB\x15\x74\xC8\xFB\x55\xCB\x45\xDA\x8E\x25\xAF\xB0\x92\xBB";
 
     let mut buf = vec![0; output.len()];
-    let mut cshake = CShake::cshake256(name, custom);
+    let mut cshake = CShake::new_cshake256(name, custom);
     cshake.update(input);
     cshake.finalize(&mut buf);
     assert_eq!(buf, &output[..]);
