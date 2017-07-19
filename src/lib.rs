@@ -4,3 +4,4 @@ extern crate tiny_keccak;
 pub mod utils;
 pub mod cshake;
 pub mod kmac;
+pub mod tuplehash;

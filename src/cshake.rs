@@ -21,17 +21,17 @@ impl CShake {
     }
 
     fn init(&mut self, name: &[u8], custom: &[u8], rate: usize) {
-        let mut buf = [0; 9];
+        let mut encbuf = [0; 9];
 
-        let pos = left_encode(&mut buf, rate as u64);
-        self.0.absorb(&buf[pos..]); // left_encode(rate)
+        let pos = left_encode(&mut encbuf, rate as u64);
+        self.0.absorb(&encbuf[pos..]); // left_encode(rate)
 
-        let pos = left_encode(&mut buf, name.len() as u64 * 8);
-        self.0.absorb(&buf[pos..]); // left_encode(len(N))
+        let pos = left_encode(&mut encbuf, name.len() as u64 * 8);
+        self.0.absorb(&encbuf[pos..]); // left_encode(len(N))
         self.0.absorb(name);
 
-        let pos = left_encode(&mut buf, custom.len() as u64 * 8);
-        self.0.absorb(&buf[pos..]); // left_encode(len(S))
+        let pos = left_encode(&mut encbuf, custom.len() as u64 * 8);
+        self.0.absorb(&encbuf[pos..]); // left_encode(len(S))
         self.0.absorb(custom);
 
         self.0.fill_block(); // pad zero

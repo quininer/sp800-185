@@ -6,12 +6,14 @@ use ::utils::{ left_encode, right_encode };
 pub struct KMac(pub CShake);
 
 impl KMac {
+    #[inline]
     pub fn new_kmac128(key: &[u8], custom: &[u8]) -> Self {
         let mut kmac = KMac(CShake::new_cshake128(b"KMAC", custom));
         kmac.init(key, 168);
         kmac
     }
 
+    #[inline]
     pub fn new_kmac256(key: &[u8], custom: &[u8]) -> Self {
         let mut kmac = KMac(CShake::new_cshake256(b"KMAC", custom));
         kmac.init(key, 136);
@@ -19,14 +21,14 @@ impl KMac {
     }
 
     fn init(&mut self, key: &[u8], rate: usize) {
-        let mut buf = [0; 9];
+        let mut encbuf = [0; 9];
 
         // bytepad(encode_string(k))
-        let pos = left_encode(&mut buf, rate as u64);
-        self.0.update(&buf[pos..]);
+        let pos = left_encode(&mut encbuf, rate as u64);
+        self.0.update(&encbuf[pos..]);
 
-        let pos = left_encode(&mut buf, key.len() as u64 * 8);
-        self.0.update(&buf[pos..]);
+        let pos = left_encode(&mut encbuf, key.len() as u64 * 8);
+        self.0.update(&encbuf[pos..]);
         self.0.update(key);
 
         (self.0).0.fill_block();
@@ -47,6 +49,7 @@ impl KMac {
     pub fn finalize_with_bitlength(&mut self, buf: &mut [u8], bitlength: u64) {
         let mut encbuf = [0; 9];
 
+        // right_encode(L)
         let pos = right_encode(&mut encbuf, bitlength);
         self.0.update(&encbuf[pos..]);
 
