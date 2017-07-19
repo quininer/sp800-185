@@ -40,13 +40,18 @@ impl KMac {
     }
 
     #[inline]
-    pub fn finalize(&mut self, buf: &mut [u8]) {
+    pub fn finalize(mut self, buf: &mut [u8]) {
         let len = buf.len() as u64 * 8;
         self.finalize_with_bitlength(buf, len)
     }
 
     #[inline]
-    pub fn finalize_with_bitlength(&mut self, buf: &mut [u8], bitlength: u64) {
+    pub fn finalize_xof(&mut self, buf: &mut [u8]) {
+        self.finalize_with_bitlength(buf, 0)
+    }
+
+    #[inline]
+    fn finalize_with_bitlength(&mut self, buf: &mut [u8], bitlength: u64) {
         let mut encbuf = [0; 9];
 
         // right_encode(L)
@@ -98,7 +103,7 @@ fn test_kmac128() {
                     \xA0\xA1\xA2\xA3\xA4\xA5\xA6\xA7\xA8\xA9\xAA\xAB\xAC\xAD\xAE\xAF\xB0\xB1\xB2\xB3\xB4\xB5\xB6\xB7\xB8\xB9\xBA\xBB\xBC\xBD\xBE\xBF\
                     \xC0\xC1\xC2\xC3\xC4\xC5\xC6\xC7";
     let custom = b"My Tagged Application";
-    let output = b"\x1F\x5B\x4E\x6C\xCA\x02\x20\x9E\x0D\xCB\x5C\xA6\x35\xB8\x9A\x15\xE2\x71\xEC\xC7\x60\x07\x1D\xFD\x80\x5F\xAA\x38\xF9\x72\x92\x30"; 
+    let output = b"\x1F\x5B\x4E\x6C\xCA\x02\x20\x9E\x0D\xCB\x5C\xA6\x35\xB8\x9A\x15\xE2\x71\xEC\xC7\x60\x07\x1D\xFD\x80\x5F\xAA\x38\xF9\x72\x92\x30";
 
     let mut buf = vec![0; output.len()];
     let mut kmac = KMac::new_kmac128(key, custom);
@@ -170,7 +175,7 @@ fn test_kmac128_xof() {
     let mut buf = vec![0; output.len()];
     let mut kmac = KMac::new_kmac128(key, custom);
     kmac.update(data);
-    kmac.finalize_with_bitlength(&mut buf, 0);
+    kmac.finalize_xof(&mut buf);
     kmac.squeeze(&mut buf);
     assert_eq!(buf, output);
 
@@ -183,7 +188,7 @@ fn test_kmac128_xof() {
     let mut buf = vec![0; output.len()];
     let mut kmac = KMac::new_kmac128(key, custom);
     kmac.update(data);
-    kmac.finalize_with_bitlength(&mut buf, 0);
+    kmac.finalize_xof(&mut buf);
     kmac.squeeze(&mut buf);
     assert_eq!(buf, output);
 
@@ -202,7 +207,7 @@ fn test_kmac128_xof() {
     let mut buf = vec![0; output.len()];
     let mut kmac = KMac::new_kmac128(key, custom);
     kmac.update(data);
-    kmac.finalize_with_bitlength(&mut buf, 0);
+    kmac.finalize_xof(&mut buf);
     kmac.squeeze(&mut buf);
     assert_eq!(buf, output);
 }
@@ -218,7 +223,7 @@ fn test_kmac256_xof() {
     let mut buf = vec![0; output.len()];
     let mut kmac = KMac::new_kmac256(key, custom);
     kmac.update(data);
-    kmac.finalize_with_bitlength(&mut buf, 0);
+    kmac.finalize_xof(&mut buf);
     kmac.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 
@@ -238,7 +243,7 @@ fn test_kmac256_xof() {
     let mut buf = vec![0; output.len()];
     let mut kmac = KMac::new_kmac256(key, custom);
     kmac.update(data);
-    kmac.finalize_with_bitlength(&mut buf, 0);
+    kmac.finalize_xof(&mut buf);
     kmac.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 
@@ -258,7 +263,7 @@ fn test_kmac256_xof() {
     let mut buf = vec![0; output.len()];
     let mut kmac = KMac::new_kmac256(key, custom);
     kmac.update(data);
-    kmac.finalize_with_bitlength(&mut buf, 0);
+    kmac.finalize_xof(&mut buf);
     kmac.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 }

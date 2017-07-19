@@ -5,3 +5,4 @@ pub mod utils;
 pub mod cshake;
 pub mod kmac;
 pub mod tuplehash;
+pub mod parallelhash;

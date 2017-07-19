@@ -28,13 +28,17 @@ impl TupleHash {
     }
 
     #[inline]
-    pub fn finalize(&mut self, buf: &mut [u8]) {
+    pub fn finalize(mut self, buf: &mut [u8]) {
         let len = buf.len() as u64 * 8;
         self.finalize_with_bitlength(buf, len)
     }
 
     #[inline]
-    pub fn finalize_with_bitlength(&mut self, buf: &mut [u8], bitlength: u64) {
+    pub fn finalize_xof(&mut self, buf: &mut [u8]) {
+        self.finalize_with_bitlength(buf, 0)
+    }
+
+    fn finalize_with_bitlength(&mut self, buf: &mut [u8], bitlength: u64) {
         let mut encbuf = [0; 9];
 
         // right_encode(L)
@@ -133,7 +137,7 @@ fn test_tuplehash128_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = TupleHash::new_tuplehash128(s0);
     hasher.update(&[&te3[..], &te6[..]]);
-    hasher.finalize_with_bitlength(&mut buf, 0);
+    hasher.finalize_xof(&mut buf);
     hasher.squeeze(&mut buf);
     assert_eq!(buf, output);
 
@@ -142,7 +146,7 @@ fn test_tuplehash128_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = TupleHash::new_tuplehash128(s1);
     hasher.update(&[&te3[..], &te6[..]]);
-    hasher.finalize_with_bitlength(&mut buf, 0);
+    hasher.finalize_xof(&mut buf);
     hasher.squeeze(&mut buf);
     assert_eq!(buf, output);
 
@@ -151,7 +155,7 @@ fn test_tuplehash128_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = TupleHash::new_tuplehash128(s1);
     hasher.update(&[&te3[..], &te6[..], &te9[..]]);
-    hasher.finalize_with_bitlength(&mut buf, 0);
+    hasher.finalize_xof(&mut buf);
     hasher.squeeze(&mut buf);
     assert_eq!(buf, output);
 }
@@ -170,7 +174,7 @@ fn test_tuplehash256_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = TupleHash::new_tuplehash256(s0);
     hasher.update(&[&te3[..], &te6[..]]);
-    hasher.finalize_with_bitlength(&mut buf, 0);
+    hasher.finalize_xof(&mut buf);
     hasher.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 
@@ -180,7 +184,7 @@ fn test_tuplehash256_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = TupleHash::new_tuplehash256(s1);
     hasher.update(&[&te3[..], &te6[..]]);
-    hasher.finalize_with_bitlength(&mut buf, 0);
+    hasher.finalize_xof(&mut buf);
     hasher.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 
@@ -190,7 +194,7 @@ fn test_tuplehash256_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = TupleHash::new_tuplehash256(s1);
     hasher.update(&[&te3[..], &te6[..], &te9[..]]);
-    hasher.finalize_with_bitlength(&mut buf, 0);
+    hasher.finalize_xof(&mut buf);
     hasher.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 }
