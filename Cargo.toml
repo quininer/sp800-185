@@ -6,3 +6,7 @@ authors = ["quininer kel <quininer@live.com>"]
 [dependencies]
 tiny-keccak = { git = "https://github.com/quininer/tiny-keccak" }
 byteorder = "*"
+rayon = { version = "*", optional = true }
+
+[features]
+parallelhash = [ "rayon" ]

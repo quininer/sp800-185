@@ -1,4 +1,5 @@
 use tiny_keccak::Keccak;
+use rayon::prelude::*;
 use ::cshake::CShake;
 use ::utils::{ left_encode, right_encode };
 
@@ -6,6 +7,7 @@ use ::utils::{ left_encode, right_encode };
 #[derive(Clone)]
 pub struct ParallelHash {
     inner: CShake,
+    buf: Vec<u8>,
     n: u64,
     rate: usize,
     blocksize: usize
@@ -16,6 +18,7 @@ impl ParallelHash {
     pub fn new_parallelhash128(custom: &[u8], blocksize: usize) -> Self {
         let mut hasher = ParallelHash {
             inner: CShake::new_cshake128(b"ParallelHash", custom),
+            buf: Vec::new(),
             n: 0,
             rate: 128,
             blocksize
@@ -28,6 +31,7 @@ impl ParallelHash {
     pub fn new_parallelhash256(custom: &[u8], blocksize: usize) -> Self {
         let mut hasher = ParallelHash {
             inner: CShake::new_cshake256(b"ParallelHash", custom),
+            buf: Vec::new(),
             n: 0,
             rate: 256,
             blocksize
@@ -47,18 +51,47 @@ impl ParallelHash {
     pub fn update(&mut self, buf: &[u8]) {
         let rate = self.rate;
 
-        for encbuf in buf.chunks(self.blocksize)
-            .map(|chunk| {
+        let pos = if !self.buf.is_empty() {
+            let len = self.blocksize - self.buf.len();
+
+            if buf.len() < len {
+                self.buf.extend_from_slice(buf);
+
+                return;
+            } else {
+                let mut encbuf = vec![0; rate / 4];
+                let mut shake = Keccak::new(200 - rate / 4, 0x1f);
+                shake.update(&self.buf);
+                shake.update(&buf[..len]);
+                shake.finalize(&mut encbuf);
+                self.inner.update(&encbuf);
+                self.buf.clear();
+                self.n += 1;
+            }
+            len
+        } else {
+            0
+        };
+
+        let bufs = buf[pos..].par_chunks(self.blocksize)
+            .map(|chunk| if chunk.len() < self.blocksize {
+                (false, chunk.into())
+            } else {
                 // cSHAKE(chunk, rate, "", "")
-                let mut buf = vec![0; rate / 4];
+                let mut encbuf = vec![0; rate / 4];
                 let mut shake = Keccak::new(200 - rate / 4, 0x1f);
                 shake.update(chunk);
-                shake.finalize(&mut buf);
-                buf
+                shake.finalize(&mut encbuf);
+                (true, encbuf)
             })
-        {
-            self.inner.update(&encbuf);
-            self.n += 1;
+            .collect::<Vec<_>>();
+        for (is_hashed, mut buf) in bufs {
+            if is_hashed {
+                self.inner.update(&buf);
+                self.n += 1;
+            } else {
+                self.buf.append(&mut buf);
+            }
         }
     }
 
@@ -74,6 +107,17 @@ impl ParallelHash {
     }
 
     fn finalize_with_bitlength(&mut self, buf: &mut [u8], bitlength: u64) {
+        if !self.buf.is_empty() {
+            let mut encbuf = vec![0; self.rate / 4];
+            let mut shake = Keccak::new(200 - self.rate / 4, 0x1f);
+            shake.update(&self.buf);
+            shake.finalize(&mut encbuf);
+            self.inner.update(&encbuf);
+            self.buf.clear();
+            self.n += 1;
+        }
+
+
         let mut encbuf = [0; 9];
 
         // right_encode(n)
@@ -116,6 +160,16 @@ fn test_parallelhash128() {
     hasher.update(x192);
     hasher.finalize(&mut buf);
     assert_eq!(buf, output);
+
+
+
+    let output = b"\xBA\x8D\xC1\xD1\xD9\x79\x33\x1D\x3F\x81\x36\x03\xC6\x7F\x72\x60\x9A\xB5\xE4\x4B\x94\xA0\xB8\xF9\xAF\x46\x51\x44\x54\xA2\xB4\xF5";
+    let mut buf = vec![0; output.len()];
+    let mut hasher = ParallelHash::new_parallelhash128(s0, 8);
+    hasher.update(&x192[..13]);
+    hasher.update(&x192[13..]);
+    hasher.finalize(&mut buf);
+    assert_eq!(buf, output);
 }
 
 #[test]
@@ -138,6 +192,16 @@ fn test_parallelhash256() {
     let mut buf = vec![0; output.len()];
     let mut hasher = ParallelHash::new_parallelhash256(s1, 8);
     hasher.update(x192);
+    hasher.finalize(&mut buf);
+    assert_eq!(buf, &output[..]);
+
+
+    let output = b"\xBC\x1E\xF1\x24\xDA\x34\x49\x5E\x94\x8E\xAD\x20\x7D\xD9\x84\x22\x35\xDA\x43\x2D\x2B\xBC\x54\xB4\xC1\x10\xE6\x4C\x45\x11\x05\x53\
+                        \x1B\x7F\x2A\x3E\x0C\xE0\x55\xC0\x28\x05\xE7\xC2\xDE\x1F\xB7\x46\xAF\x97\xA1\xDD\x01\xF4\x3B\x82\x4E\x31\xB8\x76\x12\x41\x04\x29";
+    let mut buf = vec![0; output.len()];
+    let mut hasher = ParallelHash::new_parallelhash256(s0, 8);
+    hasher.update(&x192[..13]);
+    hasher.update(&x192[13..]);
     hasher.finalize(&mut buf);
     assert_eq!(buf, &output[..]);
 }
