@@ -1,6 +1,9 @@
 use byteorder::{ ByteOrder, BigEndian };
 
 
+/// `left_encode(x)` encodes the integer x as a byte string in a way that can be unambiguously parsed
+/// from the beginning of the string by inserting the length of the byte string before the byte string
+/// representation of x.
 pub fn left_encode(buf: &mut [u8], value: u64) -> usize {
     // ref https://cryptologie.net/article/388/shake-cshake-and-some-more-bit-ordering/
 
@@ -23,6 +26,9 @@ pub fn left_encode(buf: &mut [u8], value: u64) -> usize {
 }
 
 
+/// `right_encode(x)` encodes the integer x as a byte string in a way that can be unambiguously parsed
+/// from the end of the string by inserting the length of the byte string after the byte string
+/// representation of x.
 pub fn right_encode(buf: &mut [u8], value: u64) -> usize {
     assert_eq!(buf.len(), 9);
     buf.copy_from_slice(&[0; 9]);

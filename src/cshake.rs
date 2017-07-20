@@ -2,8 +2,14 @@ use tiny_keccak::Keccak;
 use ::utils::left_encode;
 
 
+
+/// The customizable SHAKE function.
+///
+/// The two variants of `cSHAKE`—`cSHAKE128` and `cSHAKE256`—are defined in terms of the
+/// `SHAKE` and `KECCAK[c]` functions specified in FIPS 202. `cSHAKE128` provides a 128-bit
+/// security strength, while `cSHAKE256` provides a 256-bit security strength.
 #[derive(Clone)]
-pub struct CShake(pub Keccak);
+pub struct CShake(pub(crate) Keccak);
 
 impl CShake {
     #[inline]

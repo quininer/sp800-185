@@ -4,6 +4,14 @@ use ::cshake::CShake;
 use ::utils::{ left_encode, right_encode };
 
 
+/// Parallel Hash
+///
+/// The purpose of `ParallelHash` 10 is to support the efficient hashing of very long strings, by taking
+/// advantage of the parallelism available in modern processors. `ParallelHash` supports the 128- and
+/// 256-bit security strengths, and also provides variable-length output. Changing any input
+/// parameter to `ParallelHash`, even the requested output length, will result in unrelated output. Like
+/// the other functions defined in this document, `ParallelHash` also supports user-selected
+/// customization strings.
 #[derive(Clone)]
 pub struct ParallelHash {
     inner: CShake,
@@ -101,6 +109,12 @@ impl ParallelHash {
         self.finalize_with_bitlength(buf, len)
     }
 
+    /// A function on bit strings in which the output can be extended to  any desired length.
+    ///
+    /// Some applications of `ParallelHash` may not know the number of output bits they will need until
+    /// after the outputs begin to be produced. For these applications, `ParallelHash` can also be used as a
+    /// XOF (i.e., the output can be extended to any desired length), which mimics the behavior of
+    /// cSHAKE.
     #[inline]
     pub fn finalize_xof(&mut self, buf: &mut [u8]) {
         self.finalize_with_bitlength(buf, 0)

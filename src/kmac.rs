@@ -2,8 +2,17 @@ use ::cshake::CShake;
 use ::utils::{ left_encode, right_encode };
 
 
+/// KECCAK Message Authentication Code.
+///
+/// The KECCAK Message Authentication Code (KMAC) algorithm is a PRF and keyed hash
+/// function based on `KECCAK`. It provides variable-length output, and unlike `SHAKE` and `cSHAKE`,
+/// altering the requested output length generates a new, unrelated output. `KMAC` has two variants,
+/// `KMAC128` and `KMAC256`, built from `cSHAKE128` and `cSHAKE256`, respectively. The two
+/// variants differ somewhat in their technical security properties. Nonetheless, for most
+/// applications, both variants can support any security strength up to 256 bits of security, provided
+/// that a long enough key is used.
 #[derive(Clone)]
-pub struct KMac(pub CShake);
+pub struct KMac(CShake);
 
 impl KMac {
     #[inline]
@@ -45,6 +54,11 @@ impl KMac {
         self.finalize_with_bitlength(buf, len)
     }
 
+    /// A function on bit strings in which the output can be extended to  any desired length.
+    ///
+    /// Some applications of `KMAC` may not know the number of output bits they will need until after
+    /// the outputs begin to be produced. For these applications, `KMAC` can also be used as a XOF (i.e.,
+    /// the output can be extended to any desired length), which mimics the behavior of `cSHAKE`.
     #[inline]
     pub fn finalize_xof(&mut self, buf: &mut [u8]) {
         self.finalize_with_bitlength(buf, 0)
