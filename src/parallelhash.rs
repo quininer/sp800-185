@@ -4,7 +4,7 @@ use ::cshake::CShake;
 use ::utils::{ left_encode, right_encode };
 
 
-/// Parallel Hash
+/// Parallel Hash.
 ///
 /// The purpose of `ParallelHash` 10 is to support the efficient hashing of very long strings, by taking
 /// advantage of the parallelism available in modern processors. `ParallelHash` supports the 128- and

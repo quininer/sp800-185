@@ -2,7 +2,6 @@ use tiny_keccak::Keccak;
 use ::utils::left_encode;
 
 
-
 /// The customizable SHAKE function.
 ///
 /// The two variants of `cSHAKE`—`cSHAKE128` and `cSHAKE256`—are defined in terms of the

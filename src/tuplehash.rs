@@ -2,7 +2,7 @@ use ::cshake::CShake;
 use ::utils::{ left_encode, right_encode };
 
 
-/// Tuple Hash
+/// Tuple Hash.
 ///
 /// `TupleHash` is a SHA-3-derived hash function with variable-length output that is designed to
 /// simply hash a tuple of input strings, any or all of which may be empty strings, in an

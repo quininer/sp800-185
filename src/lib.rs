@@ -1,3 +1,6 @@
+//! SHA-3 Derived Functions (SP800-185) Implementation in Rust.
+
+
 extern crate byteorder;
 extern crate tiny_keccak;
 #[cfg(feature = "parallelhash")] extern crate rayon;
