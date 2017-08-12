@@ -7,5 +7,6 @@
 
 SHA-3 Derived Functions (SP800-185) Implementation in Rust.
 
-* [SHA-3 Derived Functions: cSHAKE, KMAC, TupleHash, and ParallelHash](nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-185.pdf)
+* [SHA-3 Derived Functions: cSHAKE, KMAC, TupleHash, and ParallelHash](https://www.nist.gov/publications/sha-3-derived-functions-cshake-kmac-tuplehash-and-parallelhash)
 * [KeccakCodePackage](https://github.com/gvanas/KeccakCodePackage)
+* [SHAKE, cSHAKE and some more bit ordering April 2017](https://cryptologie.net/article/388/shake-cshake-and-some-more-bit-ordering/)

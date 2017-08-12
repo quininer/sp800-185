@@ -10,16 +10,12 @@ pub fn left_encode(buf: &mut [u8], value: u64) -> usize {
     assert_eq!(buf.len(), 9);
     buf.copy_from_slice(&[0; 9]);
 
-    let offset = if value == 0 {
-        8
-    } else {
-        BigEndian::write_u64(&mut buf[1..], value.to_le());
-        buf.iter()
-            .enumerate()
-            .find(|&(_, &v)| v != 0)
-            .map(|(n, _)| n)
-            .unwrap_or(8)
-    };
+    BigEndian::write_u64(&mut buf[1..], value.to_le());
+    let offset = buf.iter()
+        .enumerate()
+        .find(|&(_, &v)| v != 0)
+        .map(|(n, _)| n)
+        .unwrap_or(8);
 
     buf[offset - 1] = (9 - offset) as u8;
     offset - 1
@@ -33,16 +29,12 @@ pub fn right_encode(buf: &mut [u8], value: u64) -> usize {
     assert_eq!(buf.len(), 9);
     buf.copy_from_slice(&[0; 9]);
 
-    let offset = if value == 0 {
-        7
-    } else {
-        BigEndian::write_u64(&mut buf[..8], value.to_le());
-        buf.iter()
-            .enumerate()
-            .find(|&(_, &v)| v != 0)
-            .map(|(n, _)| n)
-            .unwrap_or(7)
-    };
+    BigEndian::write_u64(&mut buf[..8], value.to_le());
+    let offset = buf.iter()
+        .enumerate()
+        .find(|&(_, &v)| v != 0)
+        .map(|(n, _)| n)
+        .unwrap_or(7);
 
     buf[8] = (8 - offset) as u8;
     offset
