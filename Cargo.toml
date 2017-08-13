@@ -9,8 +9,8 @@ categories = [ "cryptography", "no-std" ]
 license = "MIT"
 
 [badges]
-travis-ci = { repository = "quininer/sarkara" }
-appveyor = { repository = "quininer/sarkara" }
+travis-ci = { repository = "quininer/sp800-185" }
+appveyor = { repository = "quininer/sp800-185" }
 
 [dependencies]
 tiny-keccak = "1.3"
