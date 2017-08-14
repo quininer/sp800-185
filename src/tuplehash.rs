@@ -30,10 +30,11 @@ impl TupleHash {
         TupleHash(CShake::new_cshake256(b"TupleHash", custom))
     }
 
-    pub fn update(&mut self, input: &[&[u8]]) {
+    pub fn update<T: AsRef<[u8]>>(&mut self, input: &[T]) {
         let mut encbuf = [0; 9];
 
         for buf in input {
+            let buf = buf.as_ref();
             // encode_string(X[i])
             let pos = left_encode(&mut encbuf, buf.len() as u64 * 8);
             self.0.update(&encbuf[pos..]);
