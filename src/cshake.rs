@@ -1,4 +1,4 @@
-use tiny_keccak::Keccak;
+use tiny_keccak::{ Keccak, XofReader };
 use ::utils::left_encode;
 
 
@@ -55,7 +55,7 @@ impl CShake {
     }
 
     #[inline]
-    pub fn squeeze(&mut self, buf: &mut [u8]) {
-        self.0.squeeze(buf)
+    pub fn xof(self) -> XofReader {
+        self.0.xof()
     }
 }

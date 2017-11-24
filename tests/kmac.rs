@@ -110,8 +110,8 @@ fn test_kmac128_xof() {
     let mut buf = vec![0; output.len()];
     let mut kmac = KMac::new_kmac128(key, custom);
     kmac.update(data);
-    kmac.finalize_xof(&mut buf);
-    kmac.squeeze(&mut buf);
+    let mut xof = kmac.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, output);
 
 
@@ -123,8 +123,8 @@ fn test_kmac128_xof() {
     let mut buf = vec![0; output.len()];
     let mut kmac = KMac::new_kmac128(key, custom);
     kmac.update(data);
-    kmac.finalize_xof(&mut buf);
-    kmac.squeeze(&mut buf);
+    let mut xof = kmac.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, output);
 
 
@@ -142,8 +142,8 @@ fn test_kmac128_xof() {
     let mut buf = vec![0; output.len()];
     let mut kmac = KMac::new_kmac128(key, custom);
     kmac.update(data);
-    kmac.finalize_xof(&mut buf);
-    kmac.squeeze(&mut buf);
+    let mut xof = kmac.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, output);
 }
 
@@ -158,8 +158,8 @@ fn test_kmac256_xof() {
     let mut buf = vec![0; output.len()];
     let mut kmac = KMac::new_kmac256(key, custom);
     kmac.update(data);
-    kmac.finalize_xof(&mut buf);
-    kmac.squeeze(&mut buf);
+    let mut xof = kmac.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 
 
@@ -178,8 +178,8 @@ fn test_kmac256_xof() {
     let mut buf = vec![0; output.len()];
     let mut kmac = KMac::new_kmac256(key, custom);
     kmac.update(data);
-    kmac.finalize_xof(&mut buf);
-    kmac.squeeze(&mut buf);
+    let mut xof = kmac.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 
 
@@ -198,7 +198,7 @@ fn test_kmac256_xof() {
     let mut buf = vec![0; output.len()];
     let mut kmac = KMac::new_kmac256(key, custom);
     kmac.update(data);
-    kmac.finalize_xof(&mut buf);
-    kmac.squeeze(&mut buf);
+    let mut xof = kmac.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 }

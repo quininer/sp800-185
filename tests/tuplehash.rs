@@ -85,8 +85,8 @@ fn test_tuplehash128_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = TupleHash::new_tuplehash128(s0);
     hasher.update(&[&te3[..], &te6[..]]);
-    hasher.finalize_xof(&mut buf);
-    hasher.squeeze(&mut buf);
+    let mut xof = hasher.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, output);
 
 
@@ -94,8 +94,8 @@ fn test_tuplehash128_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = TupleHash::new_tuplehash128(s1);
     hasher.update(&[&te3[..], &te6[..]]);
-    hasher.finalize_xof(&mut buf);
-    hasher.squeeze(&mut buf);
+    let mut xof = hasher.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, output);
 
 
@@ -103,8 +103,8 @@ fn test_tuplehash128_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = TupleHash::new_tuplehash128(s1);
     hasher.update(&[&te3[..], &te6[..], &te9[..]]);
-    hasher.finalize_xof(&mut buf);
-    hasher.squeeze(&mut buf);
+    let mut xof = hasher.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, output);
 }
 
@@ -122,8 +122,8 @@ fn test_tuplehash256_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = TupleHash::new_tuplehash256(s0);
     hasher.update(&[&te3[..], &te6[..]]);
-    hasher.finalize_xof(&mut buf);
-    hasher.squeeze(&mut buf);
+    let mut xof = hasher.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 
 
@@ -132,8 +132,8 @@ fn test_tuplehash256_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = TupleHash::new_tuplehash256(s1);
     hasher.update(&[&te3[..], &te6[..]]);
-    hasher.finalize_xof(&mut buf);
-    hasher.squeeze(&mut buf);
+    let mut xof = hasher.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 
 
@@ -142,7 +142,7 @@ fn test_tuplehash256_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = TupleHash::new_tuplehash256(s1);
     hasher.update(&[&te3[..], &te6[..], &te9[..]]);
-    hasher.finalize_xof(&mut buf);
-    hasher.squeeze(&mut buf);
+    let mut xof = hasher.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 }

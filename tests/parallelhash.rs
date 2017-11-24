@@ -84,8 +84,8 @@ fn test_parallelhash128_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = ParallelHash::new_parallelhash128(s0, 8);
     hasher.update(x192);
-    hasher.finalize_xof(&mut buf);
-    hasher.squeeze(&mut buf);
+    let mut xof = hasher.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, output);
 
 
@@ -93,8 +93,8 @@ fn test_parallelhash128_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = ParallelHash::new_parallelhash128(s1, 8);
     hasher.update(x192);
-    hasher.finalize_xof(&mut buf);
-    hasher.squeeze(&mut buf);
+    let mut xof = hasher.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, output);
 }
 
@@ -110,8 +110,8 @@ fn test_parallelhash256_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = ParallelHash::new_parallelhash256(s0, 8);
     hasher.update(x192);
-    hasher.finalize_xof(&mut buf);
-    hasher.squeeze(&mut buf);
+    let mut xof = hasher.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 
 
@@ -120,7 +120,7 @@ fn test_parallelhash256_xof() {
     let mut buf = vec![0; output.len()];
     let mut hasher = ParallelHash::new_parallelhash256(s1, 8);
     hasher.update(x192);
-    hasher.finalize_xof(&mut buf);
-    hasher.squeeze(&mut buf);
+    let mut xof = hasher.xof();
+    xof.squeeze(&mut buf);
     assert_eq!(buf, &output[..]);
 }

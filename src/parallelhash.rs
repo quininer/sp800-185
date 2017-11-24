@@ -1,4 +1,4 @@
-use tiny_keccak::Keccak;
+use tiny_keccak::{ Keccak, XofReader };
 use rayon::prelude::*;
 use ::cshake::CShake;
 use ::utils::{ left_encode, right_encode };
@@ -105,8 +105,8 @@ impl ParallelHash {
 
     #[inline]
     pub fn finalize(mut self, buf: &mut [u8]) {
-        let len = buf.len() as u64 * 8;
-        self.finalize_with_bitlength(buf, len)
+        self.with_bitlength(buf.len() as u64 * 8);
+        self.inner.finalize(buf)
     }
 
     /// A function on bit strings in which the output can be extended to  any desired length.
@@ -116,11 +116,13 @@ impl ParallelHash {
     /// XOF (i.e., the output can be extended to any desired length), which mimics the behavior of
     /// cSHAKE.
     #[inline]
-    pub fn finalize_xof(&mut self, buf: &mut [u8]) {
-        self.finalize_with_bitlength(buf, 0)
+    pub fn xof(mut self) -> XofReader {
+        self.with_bitlength(0);
+        self.inner.xof()
     }
 
-    fn finalize_with_bitlength(&mut self, buf: &mut [u8], bitlength: u64) {
+    #[inline]
+    fn with_bitlength(&mut self, bitlength: u64) {
         if !self.buf.is_empty() {
             let mut encbuf = vec![0; self.rate / 4];
             let mut shake = Keccak::new(200 - self.rate / 4, 0x1f);
@@ -141,12 +143,5 @@ impl ParallelHash {
         // right_encode(L)
         let pos = right_encode(&mut encbuf, bitlength);
         self.inner.update(&encbuf[pos..]);
-
-        self.inner.finalize(buf);
-    }
-
-    #[inline]
-    pub fn squeeze(&mut self, buf: &mut [u8]) {
-        self.inner.squeeze(buf)
     }
 }

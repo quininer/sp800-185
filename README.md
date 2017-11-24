@@ -1,6 +1,5 @@
 # SP800-185
 [![travis-ci](https://api.travis-ci.org/quininer/sp800-185.svg)](https://travis-ci.org/quininer/sp800-185)
-[![appveyor](https://ci.appveyor.com/api/projects/status/xqy7fumt0n8nw49c?svg=true)](https://ci.appveyor.com/project/quininer/sp800-185)
 [![crates](https://img.shields.io/crates/v/sp800-185.svg)](https://crates.io/crates/sp800-185)
 [![license](https://img.shields.io/github/license/quininer/sp800-185.svg)](https://github.com/quininer/sp800-185/blob/master/LICENSE)
 [![docs.rs](https://docs.rs/sp800-185/badge.svg)](https://docs.rs/sp800-185/)

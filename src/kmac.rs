@@ -1,3 +1,4 @@
+use tiny_keccak::XofReader;
 use ::cshake::CShake;
 use ::utils::{ left_encode, right_encode };
 
@@ -50,8 +51,8 @@ impl KMac {
 
     #[inline]
     pub fn finalize(mut self, buf: &mut [u8]) {
-        let len = buf.len() as u64 * 8;
-        self.finalize_with_bitlength(buf, len)
+        self.with_bitlength(buf.len() as u64 * 8);
+        self.0.finalize(buf);
     }
 
     /// A function on bit strings in which the output can be extended to  any desired length.
@@ -60,23 +61,17 @@ impl KMac {
     /// the outputs begin to be produced. For these applications, `KMAC` can also be used as a XOF (i.e.,
     /// the output can be extended to any desired length), which mimics the behavior of `cSHAKE`.
     #[inline]
-    pub fn finalize_xof(&mut self, buf: &mut [u8]) {
-        self.finalize_with_bitlength(buf, 0)
+    pub fn xof(mut self) -> XofReader {
+        self.with_bitlength(0);
+        self.0.xof()
     }
 
     #[inline]
-    fn finalize_with_bitlength(&mut self, buf: &mut [u8], bitlength: u64) {
+    fn with_bitlength(&mut self, bitlength: u64) {
         let mut encbuf = [0; 9];
 
         // right_encode(L)
         let pos = right_encode(&mut encbuf, bitlength);
         self.0.update(&encbuf[pos..]);
-
-        self.0.finalize(buf)
-    }
-
-    #[inline]
-    pub fn squeeze(&mut self, buf: &mut [u8]) {
-        self.0.squeeze(buf)
     }
 }
